@@ -28845,18 +28845,29 @@ function (_React$Component) {
     }
 
     return _possibleConstructorReturn(_this, (_temp = _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(App)).call.apply(_getPrototypeOf2, [this].concat(args))), _this.state = {
+      alertas: [],
       formulario: [{
         tipo: "text",
         id: 1,
         valor: "",
         placeholder: "Aqui voce vai digitar seu nome",
-        label: "Digite seu nome"
+        label: "Digite seu nome",
+        func: eval("(valor)=> {if (valor.trim().length == 0) {return false;}return true;}"),
+        msgErro: "Campo nome nao pode ser vazio"
       }, {
         tipo: "text",
         id: 2,
         valor: "kalho doido",
         placeholder: "",
-        label: "Digite seu email"
+        label: "Digite seu email",
+        func: function func(valor) {
+          if (valor.trim().length == 0) {
+            return false;
+          }
+
+          return true;
+        },
+        msgErro: "Campo email nao pode ser vazio"
       }, {
         tipo: "password",
         id: 3,
@@ -28981,6 +28992,29 @@ function (_React$Component) {
   }
 
   _createClass(App, [{
+    key: "validaAntesDeSalvar",
+    value: function validaAntesDeSalvar() {
+      var formulario = this.state.formulario;
+      var alertas = [];
+      formulario.map(function (valor) {
+        if (valor.func != undefined) {
+          console.log(valor.func);
+          var validou = valor.func(valor.valor);
+
+          if (validou == false) {
+            document.getElementById(valor.id).style = "border-color: red";
+            console.log(valor.msgErro);
+            alertas.push(valor.msgErro);
+          } else {
+            document.getElementById(valor.id).style = "border-color: none";
+          }
+        }
+      });
+      this.setState({
+        alertas: alertas
+      });
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       this.state.formulario.map(function (valor) {
@@ -29036,17 +29070,29 @@ function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
+      var alertas = this.state.alertas;
       return _react.default.createElement("div", {
         className: "container-fluid"
       }, _react.default.createElement("div", {
         className: "row"
-      }, this.renderizaComponente()), _react.default.createElement("h1", null, this.state.texto), _react.default.createElement("button", {
+      }, alertas.map(function (valor, index) {
+        return _react.default.createElement("div", {
+          key: index,
+          className: "alert alert-danger col-sm-12",
+          role: "alert"
+        }, valor);
+      }), this.renderizaComponente()), _react.default.createElement("h1", null, this.state.texto), _react.default.createElement("button", {
         className: "btn btn-success",
         onClick: function onClick() {
           $('.alert').show();
           console.log(_this3.state.formulario);
         }
-      }, "VER FORMULARIO"));
+      }, "VER FORMULARIO"), _react.default.createElement("br", null), _react.default.createElement("button", {
+        className: "btn btn-success",
+        onClick: function onClick() {
+          _this3.validaAntesDeSalvar();
+        }
+      }, "VALIDAR ANTES DE SALVAR"));
     }
   }]);
 
@@ -29077,7 +29123,7 @@ var Radio = function Radio(_ref2) {
     className: "form-group col-sm-4"
   }, _react.default.createElement("label", null, componente.label), componente.options.map(function (valor, index) {
     return _react.default.createElement("div", {
-      key: valor.id,
+      key: valor.id.toString(),
       className: "form-check"
     }, _react.default.createElement("input", {
       className: "form-check-input",
@@ -29102,7 +29148,7 @@ var Checkbox = function Checkbox(_ref3) {
     className: "form-group col-sm-4"
   }, _react.default.createElement("label", null, componente.label), componente.options.map(function (valor, index) {
     return _react.default.createElement("div", {
-      key: valor.id,
+      key: valor.id.toString(),
       className: "form-check"
     }, _react.default.createElement("input", {
       className: "form-check-input",
@@ -29182,7 +29228,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49371" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65175" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

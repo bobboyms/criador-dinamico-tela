@@ -4,10 +4,26 @@ import uuid from "uuid/v1";
 
 class App extends React.Component {
   
+  
+
   state = {
+
+    alertas:[],
+
     formulario : [
-       {tipo:"text", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome"},
-       {tipo:"text", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email"},
+       {tipo:"text", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome",
+       func: eval("(valor)=> {if (valor.trim().length == 0) {return false;}return true;}"),
+       msgErro:"Campo nome nao pode ser vazio"},
+       {tipo:"text", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email",
+       func: (valor)=> {
+
+          if (valor.trim().length == 0) {
+            return false;
+          }
+
+        return true;
+
+       }, msgErro:"Campo email nao pode ser vazio"},
        {tipo:"password", id:3, valor:"", placeholder:"", label: "Digite sua senha"},
        {tipo:"select",id:4, label:"Selecione alguma coisa", 
                       options:[
@@ -32,13 +48,31 @@ class App extends React.Component {
     ]
   }
 
-  atualizaValorCampoInput = (campo, valor) => {
+  validaAntesDeSalvar() {
 
-    let novoCampo = campo;
+    const { formulario } = this.state;
 
-    novoCampo["valor"] = valor;
-   // console.log(typeof novoCampo);
-    this.setState({novoCampo})
+    let alertas = [];
+
+    formulario.map((valor)=>{
+
+      if (valor.func != undefined) {
+        console.log(valor.func)
+        let validou = valor.func(valor.valor);
+
+        if (validou == false) {
+           document.getElementById(valor.id).style = "border-color: red";
+           console.log(valor.msgErro);
+           alertas.push(valor.msgErro)
+        } else {
+          document.getElementById(valor.id).style = "border-color: none";
+        }
+        
+      }
+
+    });
+
+    this.setState({alertas})
 
   }
 
@@ -57,6 +91,18 @@ class App extends React.Component {
     });
    
   }
+
+  atualizaValorCampoInput = (campo, valor) => {
+
+    let novoCampo = campo;
+
+    novoCampo["valor"] = valor;
+   // console.log(typeof novoCampo);
+    this.setState({novoCampo})
+
+  }
+
+  
 
   atualizaValorCheckbox = (campo, filho) => {
     
@@ -138,9 +184,19 @@ class App extends React.Component {
   }
 
   render() {
+
+    const { alertas } = this.state;
+
       return(
         <div className="container-fluid">
             <div className="row">
+                {alertas.map((valor, index)=>{
+                  return(
+                    <div key={index} className="alert alert-danger col-sm-12" role="alert">
+                        {valor}
+                    </div>
+                  );
+                })}
                 {this.renderizaComponente()}
               </div>
            <h1>{this.state.texto}</h1>
@@ -150,6 +206,14 @@ class App extends React.Component {
             console.log(this.state.formulario)
           }}>
             VER FORMULARIO
+          </button>
+
+          <br />
+
+          <button className="btn btn-success" onClick={() => {
+            this.validaAntesDeSalvar();
+          }}>
+            VALIDAR ANTES DE SALVAR
           </button>
 
         </div>
@@ -174,7 +238,7 @@ const Radio = ({componente, atualizaValorCampoRadio}) => {
       <label >{componente.label}</label>
       {componente.options.map((valor, index)=> {
             return(
-                  <div key={valor.id} className="form-check">
+                  <div key={valor.id.toString()} className="form-check">
                     <input className="form-check-input" type="radio" name="exampleRadios" id={valor.id} value={valor.id} 
                       onClick={() => {
                         atualizaValorCampoRadio(componente,valor)
@@ -196,7 +260,7 @@ const Checkbox = ({componente, atualizaValorCheckbox}) => {
       <label >{componente.label}</label>
       {componente.options.map((valor, index)=> {
             return(
-                  <div key={valor.id} className="form-check">
+                  <div key={valor.id.toString()} className="form-check">
                     <input className="form-check-input" type="checkbox" id={valor.id} value={valor.id} 
                       onClick={() => {
                         atualizaValorCheckbox(componente, valor)
