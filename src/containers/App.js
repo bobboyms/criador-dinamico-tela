@@ -1,10 +1,9 @@
 import React, { Fragment } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import uuid from "uuid/v1";
+import $ from "jquery";
 
 class App extends React.Component {
-  
-  
 
   state = {
 
@@ -14,6 +13,7 @@ class App extends React.Component {
        {tipo:"text", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome",
        func: eval("(valor)=> {if (valor.trim().length == 0) {return false;}return true;}"),
        msgErro:"Campo nome nao pode ser vazio"},
+
        {tipo:"text", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email",
        func: (valor)=> {
 
@@ -33,6 +33,7 @@ class App extends React.Component {
        },
        {tipo:"text", id:5, valor:"", placeholder:"", label: "Digite seu telefone"},
        {tipo:"text", id:6, valor:"", placeholder:"", label: "Digite seu sobre nome"},
+       
        {tipo:"radio", id:7, valor:"", index:"rd3", label: "Selecione RADIO", 
                       options:[
                               {valor:"abacaxi", id:"rd1"},
@@ -45,6 +46,8 @@ class App extends React.Component {
                               {valor:"banana", id:"ch2"}, 
                               {valor:"abacaxi", id:"ch3"}]
       },
+      
+       
     ]
   }
 
@@ -76,9 +79,43 @@ class App extends React.Component {
 
   }
 
-  componentDidMount() {
+  resetaFormulario() {
 
     this.state.formulario.map((valor)=>{
+      
+      if (valor.tipo === "text" || valor.tipo === "password") {
+          let valorNovo = valor;
+          valorNovo.valor = ""
+          this.setState({valorNovo})
+          document.getElementById(valor.id).style = "border-color: none";
+      } else if (valor.tipo === "radio") {
+          let novoValor = valor;  
+          novoValor.index = null;
+          novoValor.valor = ""
+          this.setState({novoValor})
+
+          valor.options.map((valor) => {
+              document.getElementById(valor.id).checked = false
+          })
+          //console.log(novoValor)
+      } else if (valor.tipo === "checkbox") {
+          let novoValor = valor;  
+          novoValor.valor = [];
+          this.setState({novoValor})
+
+          valor.options.map((valor) => {
+              document.getElementById(valor.id).checked = false
+          })
+      }
+    });
+
+    let alertas = []
+    this.setState({alertas})
+  }
+
+  atualizaDomComponentes() {
+    this.state.formulario.map((valor)=>{
+      
       if (valor.tipo === "radio") {
         let radio = document.getElementById(valor.index);
         radio.checked = true
@@ -89,7 +126,10 @@ class App extends React.Component {
         });
       }
     });
-   
+  }
+
+  componentDidMount() {
+      this.atualizaDomComponentes()
   }
 
   atualizaValorCampoInput = (campo, valor) => {
@@ -97,18 +137,17 @@ class App extends React.Component {
     let novoCampo = campo;
 
     novoCampo["valor"] = valor;
-   // console.log(typeof novoCampo);
-    this.setState({novoCampo})
+    this.setState( { novoCampo })
+
+    //console.log({ ...this.state, campo })
 
   }
-
-  
 
   atualizaValorCheckbox = (campo, filho) => {
     
     let novoCampo = campo;
     let selecionados = []
-    campo.options.map((valor, index)=>{
+    campo.options.map((valor)=>{
           let check = document.getElementById(valor.id);
           if (check.checked == true) {
              selecionados.push({index:valor.id, valor:valor.valor})
@@ -192,8 +231,8 @@ class App extends React.Component {
             <div className="row">
                 {alertas.map((valor, index)=>{
                   return(
-                    <div key={index} className="alert alert-danger col-sm-12" role="alert">
-                        {valor}
+                    <div key={index} className="alert alert-danger alert-fixed col-sm-12" role="alert" id="#myModal">
+                        {valor} 
                     </div>
                   );
                 })}
@@ -202,7 +241,6 @@ class App extends React.Component {
            <h1>{this.state.texto}</h1>
           
           <button className="btn btn-success" onClick={() => {
-            $('.alert').show();
             console.log(this.state.formulario)
           }}>
             VER FORMULARIO
@@ -214,6 +252,12 @@ class App extends React.Component {
             this.validaAntesDeSalvar();
           }}>
             VALIDAR ANTES DE SALVAR
+          </button>
+
+          <button className="btn btn-success" onClick={() => {
+            this.resetaFormulario();
+          }}>
+            RESETA FORMULARIO
           </button>
 
         </div>
