@@ -61218,20 +61218,75 @@ var App =
 function (_React$Component) {
   _inherits(App, _React$Component);
 
-  function App() {
-    var _getPrototypeOf2;
-
+  function App(props) {
     var _this;
-
-    var _temp;
 
     _classCallCheck(this, App);
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(App).call(this, props));
 
-    return _possibleConstructorReturn(_this, (_temp = _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(App)).call.apply(_getPrototypeOf2, [this].concat(args))), _this.state = {
+    _this.atualizaValorCampoInput = function (campo, valor) {
+      var novoCampo = campo;
+      novoCampo["valor"] = valor;
+
+      _this.setState({
+        novoCampo: novoCampo
+      }); //console.log({ ...this.state, campo })
+
+    };
+
+    _this.atualizaValorCheckbox = function (campo, filho) {
+      var novoCampo = campo;
+      var selecionados = [];
+      campo.options.map(function (valor) {
+        var check = document.getElementById(valor.id);
+
+        if (check.checked == true) {
+          selecionados.push({
+            index: valor.id,
+            valor: valor.valor
+          });
+        }
+      });
+      novoCampo["valor"] = selecionados;
+
+      _this.setState({
+        novoCampo: novoCampo
+      });
+
+      console.log(novoCampo);
+    };
+
+    _this.atualizaValorCampoRadio = function (campo, filho) {
+      var novoCampo = campo;
+      var index = document.getElementById(filho.id).value;
+      var valor = filho.valor;
+      novoCampo["index"] = index;
+      novoCampo["valor"] = valor;
+
+      _this.setState({
+        novoCampo: novoCampo
+      });
+
+      console.log(novoCampo);
+    };
+
+    _this.atualizaValorCampoSelect = function (campo) {
+      var novoCampo = campo;
+      var x = document.getElementById(novoCampo.id).selectedIndex;
+      var y = document.getElementById(novoCampo.id).options; //alert("Index: " + y[x].index + " is " + y[x].value);
+
+      novoCampo["index"] = y[x].index;
+      novoCampo["valor"] = y[x].value;
+
+      _this.setState({
+        novoCampo: novoCampo
+      });
+
+      console.log(novoCampo);
+    };
+
+    _this.state = {
       alertas: [],
       formulario: [{
         tipo: "text",
@@ -61322,61 +61377,10 @@ function (_React$Component) {
           valor: "abacaxi",
           id: "ch3"
         }]
-      }]
-    }, _this.atualizaValorCampoInput = function (campo, valor) {
-      var novoCampo = campo;
-      novoCampo["valor"] = valor;
+      }] //console.log(this.state);
 
-      _this.setState({
-        novoCampo: novoCampo
-      }); //console.log({ ...this.state, campo })
-
-    }, _this.atualizaValorCheckbox = function (campo, filho) {
-      var novoCampo = campo;
-      var selecionados = [];
-      campo.options.map(function (valor) {
-        var check = document.getElementById(valor.id);
-
-        if (check.checked == true) {
-          selecionados.push({
-            index: valor.id,
-            valor: valor.valor
-          });
-        }
-      });
-      novoCampo["valor"] = selecionados;
-
-      _this.setState({
-        novoCampo: novoCampo
-      });
-
-      console.log(novoCampo);
-    }, _this.atualizaValorCampoRadio = function (campo, filho) {
-      var novoCampo = campo;
-      var index = document.getElementById(filho.id).value;
-      var valor = filho.valor;
-      novoCampo["index"] = index;
-      novoCampo["valor"] = valor;
-
-      _this.setState({
-        novoCampo: novoCampo
-      });
-
-      console.log(novoCampo);
-    }, _this.atualizaValorCampoSelect = function (campo) {
-      var novoCampo = campo;
-      var x = document.getElementById(novoCampo.id).selectedIndex;
-      var y = document.getElementById(novoCampo.id).options; //alert("Index: " + y[x].index + " is " + y[x].value);
-
-      novoCampo["index"] = y[x].index;
-      novoCampo["valor"] = y[x].value;
-
-      _this.setState({
-        novoCampo: novoCampo
-      });
-
-      console.log(novoCampo);
-    }, _temp));
+    };
+    return _this;
   }
 
   _createClass(App, [{
@@ -61407,6 +61411,7 @@ function (_React$Component) {
     value: function resetaFormulario() {
       var _this2 = this;
 
+      console.log("resetaFormulario");
       this.state.formulario.map(function (valor) {
         if (valor.tipo === "text" || valor.tipo === "password") {
           var valorNovo = valor;
@@ -61464,8 +61469,7 @@ function (_React$Component) {
     }
   }, {
     key: "componentDidMount",
-    value: function componentDidMount() {
-      this.atualizaDomComponentes();
+    value: function componentDidMount() {//this.atualizaDomComponentes()
     }
   }, {
     key: "renderizaComponente",
@@ -61473,35 +61477,40 @@ function (_React$Component) {
       var _this3 = this;
 
       var formulario = this.state.formulario;
-      var arComponentes = formulario.map(function (valor, index) {
-        if (valor.tipo === "text") {
-          return _react.default.createElement(InputText, {
-            atualizaValorCampoInput: _this3.atualizaValorCampoInput,
-            componente: valor
-          });
-        } else if (valor.tipo === "select") {
-          return _react.default.createElement(Select, {
-            atualizaValorCampoSelect: _this3.atualizaValorCampoSelect,
-            componente: valor
-          });
-        } else if (valor.tipo === "password") {
-          return _react.default.createElement(InputText, {
-            atualizaValorCampoInput: _this3.atualizaValorCampoInput,
-            componente: valor
-          });
-        } else if (valor.tipo === "radio") {
-          return _react.default.createElement(Radio, {
-            atualizaValorCampoRadio: _this3.atualizaValorCampoRadio,
-            componente: valor
-          });
-        } else if (valor.tipo === "checkbox") {
-          return _react.default.createElement(Checkbox, {
-            atualizaValorCheckbox: _this3.atualizaValorCheckbox,
-            componente: valor
-          });
-        }
-      });
-      return arComponentes;
+
+      if (formulario != undefined || formulario != null) {
+        var arComponentes = formulario.map(function (valor, index) {
+          if (valor.tipo === "text") {
+            return _react.default.createElement(InputText, {
+              atualizaValorCampoInput: _this3.atualizaValorCampoInput,
+              componente: valor
+            });
+          } else if (valor.tipo === "select") {
+            return _react.default.createElement(Select, {
+              atualizaValorCampoSelect: _this3.atualizaValorCampoSelect,
+              componente: valor
+            });
+          } else if (valor.tipo === "password") {
+            return _react.default.createElement(InputText, {
+              atualizaValorCampoInput: _this3.atualizaValorCampoInput,
+              componente: valor
+            });
+          } else if (valor.tipo === "radio") {
+            return _react.default.createElement(Radio, {
+              atualizaValorCampoRadio: _this3.atualizaValorCampoRadio,
+              componente: valor
+            });
+          } else if (valor.tipo === "checkbox") {
+            return _react.default.createElement(Checkbox, {
+              atualizaValorCheckbox: _this3.atualizaValorCheckbox,
+              componente: valor
+            });
+          }
+        });
+        return arComponentes;
+      } else {
+        return _react.default.createElement("h1", null, "NENHUM FOMUL\xC1RIO");
+      }
     }
   }, {
     key: "render",
@@ -61523,7 +61532,7 @@ function (_React$Component) {
       }), this.renderizaComponente()), _react.default.createElement("h1", null, this.state.texto), _react.default.createElement("button", {
         className: "btn btn-success",
         onClick: function onClick() {
-          console.log(_this4.state.formulario);
+          console.log(JSON.stringify(_this4.state));
         }
       }, "VER FORMULARIO"), _react.default.createElement("br", null), _react.default.createElement("button", {
         className: "btn btn-success",
@@ -61535,7 +61544,12 @@ function (_React$Component) {
         onClick: function onClick() {
           _this4.resetaFormulario();
         }
-      }, "RESETA FORMULARIO"));
+      }, "RESETA FORMULARIO"), _react.default.createElement("button", {
+        className: "btn btn-success",
+        onClick: function onClick() {
+          _this4.setState(JSON.parse('{"formulario":[{"id":0,"tipo":"text","valor":"","placeholder":"","label":"Digite seu email"},{"id":0,"tipo":"text","valor":"","placeholder":"","label":"Digite seu nome"}]}'));
+        }
+      }, "CONSTRUIR"));
     }
   }]);
 
@@ -61671,7 +61685,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53663" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54536" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

@@ -5,50 +5,55 @@ import $ from "jquery";
 
 class App extends React.Component {
 
-  state = {
+  constructor(props) {
+    super(props)
 
-    alertas:[],
+    this.state = {
 
-    formulario : [
-       {tipo:"text", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome",
-       func: eval("(valor)=> {if (valor.trim().length == 0) {return false;}return true;}"),
-       msgErro:"Campo nome nao pode ser vazio"},
-
-       {tipo:"text", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email",
-       func: (valor)=> {
-
-          if (valor.trim().length == 0) {
-            return false;
-          }
-
-        return true;
-
-       }, msgErro:"Campo email nao pode ser vazio"},
-       {tipo:"password", id:3, valor:"", placeholder:"", label: "Digite sua senha"},
-       {tipo:"select",id:4, label:"Selecione alguma coisa", 
-                      options:[
-                              {valor:"01", id:"opt1"},
-                              {valor:"02", id:"opt2"}, 
-                              {valor:"03", id:"opt3"}]
+      alertas:[],
+      formulario : [
+        {tipo:"text", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome",
+        func: eval("(valor)=> {if (valor.trim().length == 0) {return false;}return true;}"),
+        msgErro:"Campo nome nao pode ser vazio"},
+ 
+        {tipo:"text", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email",
+        func: (valor)=> {
+ 
+           if (valor.trim().length == 0) {
+             return false;
+           }
+ 
+         return true;
+ 
+        }, msgErro:"Campo email nao pode ser vazio"},
+        {tipo:"password", id:3, valor:"", placeholder:"", label: "Digite sua senha"},
+        {tipo:"select",id:4, label:"Selecione alguma coisa", 
+                       options:[
+                               {valor:"01", id:"opt1"},
+                               {valor:"02", id:"opt2"}, 
+                               {valor:"03", id:"opt3"}]
+        },
+        {tipo:"text", id:5, valor:"", placeholder:"", label: "Digite seu telefone"},
+        {tipo:"text", id:6, valor:"", placeholder:"", label: "Digite seu sobre nome"},
+        
+        {tipo:"radio", id:7, valor:"", index:"rd3", label: "Selecione RADIO", 
+                       options:[
+                               {valor:"abacaxi", id:"rd1"},
+                               {valor:"abobora", id:"rd2"}, 
+                               {valor:"cebola", id:"rd3"}]
        },
-       {tipo:"text", id:5, valor:"", placeholder:"", label: "Digite seu telefone"},
-       {tipo:"text", id:6, valor:"", placeholder:"", label: "Digite seu sobre nome"},
-       
-       {tipo:"radio", id:7, valor:"", index:"rd3", label: "Selecione RADIO", 
-                      options:[
-                              {valor:"abacaxi", id:"rd1"},
-                              {valor:"abobora", id:"rd2"}, 
-                              {valor:"cebola", id:"rd3"}]
-      },
-      {tipo:"checkbox", id:8, valor:[{index:"ch1"},{index:"ch3"}],label: "Selecione Checkbox", 
-                      options:[
-                              {valor:"morango", id:"ch1"},
-                              {valor:"banana", id:"ch2"}, 
-                              {valor:"abacaxi", id:"ch3"}]
-      },
-      
-       
-    ]
+       {tipo:"checkbox", id:8, valor:[{index:"ch1"},{index:"ch3"}],label: "Selecione Checkbox", 
+                       options:[
+                               {valor:"morango", id:"ch1"},
+                               {valor:"banana", id:"ch2"}, 
+                               {valor:"abacaxi", id:"ch3"}]
+       },
+     ]
+   }
+
+    
+    //console.log(this.state);
+
   }
 
   validaAntesDeSalvar() {
@@ -68,7 +73,7 @@ class App extends React.Component {
            console.log(valor.msgErro);
            alertas.push(valor.msgErro)
         } else {
-          document.getElementById(valor.id).style = "border-color: none";
+           document.getElementById(valor.id).style = "border-color: none";
         }
         
       }
@@ -80,6 +85,9 @@ class App extends React.Component {
   }
 
   resetaFormulario() {
+
+    
+    console.log("resetaFormulario")
 
     this.state.formulario.map((valor)=>{
       
@@ -129,7 +137,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-      this.atualizaDomComponentes()
+      //this.atualizaDomComponentes()
+
+      
   }
 
   atualizaValorCampoInput = (campo, valor) => {
@@ -192,33 +202,39 @@ class App extends React.Component {
     
     const { formulario } = this.state;
 
-    let arComponentes = formulario.map((valor, index)=>{
+    if (formulario != undefined || formulario != null) {
+      let arComponentes = formulario.map((valor, index)=>{
                     
-      if (valor.tipo === "text") {
-        return(<InputText 
-          atualizaValorCampoInput={this.atualizaValorCampoInput}
-          componente={valor} />);
-      } else if (valor.tipo === "select") {
-        return (<Select
-          atualizaValorCampoSelect={this.atualizaValorCampoSelect}
-          componente={valor}/>);
-      } else if (valor.tipo === "password") {
-        return(<InputText 
-          atualizaValorCampoInput={this.atualizaValorCampoInput}
-          componente={valor} />);
-      } else if (valor.tipo === "radio") {
-        return(<Radio
-          atualizaValorCampoRadio={this.atualizaValorCampoRadio}
-          componente={valor} />);
-      } else if (valor.tipo === "checkbox") {
-        return(<Checkbox
-          atualizaValorCheckbox={this.atualizaValorCheckbox}
-          componente={valor} />);
-      }
-      
-    })
+        if (valor.tipo === "text") {
+          return(<InputText 
+            atualizaValorCampoInput={this.atualizaValorCampoInput}
+            componente={valor} />);
+        } else if (valor.tipo === "select") {
+          return (<Select
+            atualizaValorCampoSelect={this.atualizaValorCampoSelect}
+            componente={valor}/>);
+        } else if (valor.tipo === "password") {
+          return(<InputText 
+            atualizaValorCampoInput={this.atualizaValorCampoInput}
+            componente={valor} />);
+        } else if (valor.tipo === "radio") {
+          return(<Radio
+            atualizaValorCampoRadio={this.atualizaValorCampoRadio}
+            componente={valor} />);
+        } else if (valor.tipo === "checkbox") {
+          return(<Checkbox
+            atualizaValorCheckbox={this.atualizaValorCheckbox}
+            componente={valor} />);
+        }
+        
+      })
+  
+      return(arComponentes);
+    } else {
+      return (<h1>NENHUM FOMULÁRIO</h1>)
+    }
 
-    return(arComponentes);
+    
     
   }
 
@@ -241,7 +257,7 @@ class App extends React.Component {
            <h1>{this.state.texto}</h1>
           
           <button className="btn btn-success" onClick={() => {
-            console.log(this.state.formulario)
+            console.log(JSON.stringify(this.state))
           }}>
             VER FORMULARIO
           </button>
@@ -259,6 +275,14 @@ class App extends React.Component {
           }}>
             RESETA FORMULARIO
           </button>
+
+          <button className="btn btn-success" onClick={() => {
+            this.setState(JSON.parse('{"formulario":[{"id":0,"tipo":"text","valor":"","placeholder":"","label":"Digite seu email"},{"id":0,"tipo":"text","valor":"","placeholder":"","label":"Digite seu nome"}]}'))
+          }}>
+            CONSTRUIR
+          </button>
+
+
 
         </div>
       )
