@@ -1,50 +1,64 @@
 import React, { Fragment } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import axios from 'axios';
+
 import uuid from "uuid/v1";
+import $ from "jquery";
 
 class App extends React.Component {
-  
-  state = {
 
-    alertas:[],
+  constructor(props) {
+    super(props)
 
-    formulario : [
-       {tipo:"text", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome",
-       func: eval("(valor)=> {if (valor.trim().length == 0) {return false;}return true;}"),
-       msgErro:"Campo nome nao pode ser vazio"},
-       {tipo:"text", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email",
-       func: (valor)=> {
+    this.state = {
 
-          if (valor.trim().length == 0) {
-            return false;
-          }
-
-        return true;
-
-       }, msgErro:"Campo email nao pode ser vazio"},
-       {tipo:"password", id:3, valor:"", placeholder:"", label: "Digite sua senha"},
-       {tipo:"select",id:4, label:"Selecione alguma coisa", 
-                      options:[
-                              {valor:"01", id:"opt1"},
-                              {valor:"02", id:"opt2"}, 
-                              {valor:"03", id:"opt3"}]
+      alertas:[],
+      formulario : [
+        {tipo:"text", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome",
+        func: eval("(valor)=> {if (valor.trim().length == 0) {return false;}return true;}"),
+        msgErro:"Campo nome nao pode ser vazio"},
+ 
+        {tipo:"text", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email",
+        func: (valor)=> {
+ 
+           if (valor.trim().length == 0) {
+             return false;
+           }
+ 
+         return true;
+ 
+        }, msgErro:"Campo email nao pode ser vazio"},
+        {tipo:"password", id:3, valor:"", placeholder:"", label: "Digite sua senha"},
+        {tipo:"select",id:4, label:"Selecione alguma coisa", index:"2", idDetail:"opt3", valor:"03", 
+                       options:[
+                               {valor:"01", id:"opt1"},
+                               {valor:"02", id:"opt2"}, 
+                               {valor:"03", id:"opt3"}]
+        },
+        {tipo:"text", id:5, valor:"", placeholder:"", label: "Digite seu telefone"},
+        {tipo:"text", id:6, valor:"", placeholder:"", label: "Digite seu sobre nome"},
+        
+        {tipo:"radio", id:7, valor:"", index:"rd3", idDetail:"rd3", label: "Selecione RADIO", 
+                       options:[
+                               {valor:"abacaxi", id:"rd1"},
+                               {valor:"abobora", id:"rd2"}, 
+                               {valor:"cebola", id:"rd3"}]
        },
-       {tipo:"text", id:5, valor:"", placeholder:"", label: "Digite seu telefone"},
-       {tipo:"text", id:6, valor:"", placeholder:"", label: "Digite seu sobre nome"},
-       {tipo:"radio", id:7, valor:"", index:"rd3", label: "Selecione RADIO", 
-                      options:[
-                              {valor:"abacaxi", id:"rd1"},
-                              {valor:"abobora", id:"rd2"}, 
-                              {valor:"cebola", id:"rd3"}]
-      },
-      {tipo:"checkbox", id:8, valor:[{index:"ch1"},{index:"ch3"}],label: "Selecione Checkbox", 
-                      options:[
-                              {valor:"morango", id:"ch1"},
-                              {valor:"banana", id:"ch2"}, 
-                              {valor:"abacaxi", id:"ch3"}]
-      },
-    ]
+       {tipo:"checkbox", id:8, valores:[{valor:"morango", id:"ch1"},{valor:"abacaxi", id:"ch3"}],label: "Selecione Checkbox", 
+                       options:[
+                               {valor:"morango", id:"ch1"},
+                               {valor:"banana", id:"ch2"}, 
+                               {valor:"abacaxi", id:"ch3"}]
+       },
+     ]
+   }
+
+    
+    //console.log(this.state);
+
   }
+
+
 
   validaAntesDeSalvar() {
 
@@ -63,7 +77,7 @@ class App extends React.Component {
            console.log(valor.msgErro);
            alertas.push(valor.msgErro)
         } else {
-          document.getElementById(valor.id).style = "border-color: none";
+           document.getElementById(valor.id).style = "border-color: none";
         }
         
       }
@@ -74,20 +88,64 @@ class App extends React.Component {
 
   }
 
-  componentDidMount() {
+  resetaFormulario() {
+
+    
+    console.log("resetaFormulario")
 
     this.state.formulario.map((valor)=>{
+      
+      if (valor.tipo === "text" || valor.tipo === "password") {
+          let valorNovo = valor;
+          valorNovo.valor = ""
+          this.setState({valorNovo})
+          document.getElementById(valor.id).style = "border-color: none";
+      } else if (valor.tipo === "radio") {
+          let novoValor = valor;  
+          novoValor.index = null;
+          novoValor.valor = ""
+          this.setState({novoValor})
+
+          valor.options.map((valor) => {
+              document.getElementById(valor.id).checked = false
+          })
+          //console.log(novoValor)
+      } else if (valor.tipo === "checkbox") {
+          let novoValor = valor;  
+          novoValor.valores = [];
+          this.setState({novoValor})
+
+          valor.options.map((valor) => {
+              document.getElementById(valor.id).checked = false
+          })
+      } else if (valor.tipo === "select") {
+          document.getElementById(valor.id).selectedIndex = 0;
+      }
+    });
+
+    let alertas = []
+    this.setState({alertas})
+  }
+
+  atualizaDomComponentes() {
+    this.state.formulario.map((valor)=>{
+      
       if (valor.tipo === "radio") {
         let radio = document.getElementById(valor.index);
         radio.checked = true
       } else if (valor.tipo === "checkbox") {
-        valor.valor.map((valor) => {
-          let check = document.getElementById(valor.index);
+          valor.valores.map((valor) => {
+          let check = document.getElementById(valor.id);
           check.checked = true
         });
+      } else if (valor.tipo === "select") {
+        document.getElementById(valor.id).selectedIndex = valor.index;
       }
     });
-   
+  }
+
+  componentDidMount() {
+      this.atualizaDomComponentes()
   }
 
   atualizaValorCampoInput = (campo, valor) => {
@@ -95,24 +153,23 @@ class App extends React.Component {
     let novoCampo = campo;
 
     novoCampo["valor"] = valor;
-   // console.log(typeof novoCampo);
-    this.setState({novoCampo})
+    this.setState( { novoCampo })
+
+    //console.log({ ...this.state, campo })
 
   }
-
-  
 
   atualizaValorCheckbox = (campo, filho) => {
     
     let novoCampo = campo;
     let selecionados = []
-    campo.options.map((valor, index)=>{
+    campo.options.map((valor)=>{
           let check = document.getElementById(valor.id);
           if (check.checked == true) {
-             selecionados.push({index:valor.id, valor:valor.valor})
+             selecionados.push({id:valor.id, valor:valor.valor})
           }
     });
-    novoCampo["valor"] = selecionados;
+    novoCampo["valores"] = selecionados;
     this.setState({novoCampo})
     console.log(novoCampo)
   }
@@ -140,9 +197,10 @@ class App extends React.Component {
 
     novoCampo["index"] = y[x].index;
     novoCampo["valor"] = y[x].value;
+    novoCampo["idDetail"] = y[x].id;
 
     this.setState({novoCampo})
-    console.log(novoCampo)
+    console.log(JSON.stringify(novoCampo))
 
   }
 
@@ -151,33 +209,37 @@ class App extends React.Component {
     
     const { formulario } = this.state;
 
-    let arComponentes = formulario.map((valor, index)=>{
+    if (formulario != undefined || formulario != null) {
+      let arComponentes = formulario.map((valor, index)=>{
                     
-      if (valor.tipo === "text") {
-        return(<InputText 
-          atualizaValorCampoInput={this.atualizaValorCampoInput}
-          componente={valor} />);
-      } else if (valor.tipo === "select") {
-        return (<Select
-          atualizaValorCampoSelect={this.atualizaValorCampoSelect}
-          componente={valor}/>);
-      } else if (valor.tipo === "password") {
-        return(<InputText 
-          atualizaValorCampoInput={this.atualizaValorCampoInput}
-          componente={valor} />);
-      } else if (valor.tipo === "radio") {
-        return(<Radio
-          atualizaValorCampoRadio={this.atualizaValorCampoRadio}
-          componente={valor} />);
-      } else if (valor.tipo === "checkbox") {
-        return(<Checkbox
-          atualizaValorCheckbox={this.atualizaValorCheckbox}
-          componente={valor} />);
-      }
-      
-    })
-
-    return(arComponentes);
+        if (valor.tipo === "text") {
+          return(<InputText key={index} 
+            atualizaValorCampoInput={this.atualizaValorCampoInput}
+            componente={valor} />);
+        } else if (valor.tipo === "select") {
+          return (<Select key={index}
+            atualizaValorCampoSelect={this.atualizaValorCampoSelect}
+            componente={valor}/>);
+        } else if (valor.tipo === "password") {
+          return(<InputText key={index} 
+            atualizaValorCampoInput={this.atualizaValorCampoInput}
+            componente={valor} />);
+        } else if (valor.tipo === "radio") {
+          return(<Radio key={index}
+            atualizaValorCampoRadio={this.atualizaValorCampoRadio}
+            componente={valor} />);
+        } else if (valor.tipo === "checkbox") {
+          return(<Checkbox key={index}
+            atualizaValorCheckbox={this.atualizaValorCheckbox}
+            componente={valor} />);
+        }
+        
+      })
+  
+      return(arComponentes);
+    } else {
+      return (<h1>NENHUM FOMULÁRIO</h1>)
+    }
     
   }
 
@@ -190,8 +252,8 @@ class App extends React.Component {
             <div className="row">
                 {alertas.map((valor, index)=>{
                   return(
-                    <div key={index} className="alert alert-danger col-sm-12" role="alert">
-                        {valor}
+                    <div key={index} className="alert alert-danger alert-fixed col-sm-12" role="alert" id="#myModal">
+                        {valor} 
                     </div>
                   );
                 })}
@@ -200,8 +262,7 @@ class App extends React.Component {
            <h1>{this.state.texto}</h1>
           
           <button className="btn btn-success" onClick={() => {
-            $('.alert').show();
-            console.log(this.state.formulario)
+            console.log(this.state)
           }}>
             VER FORMULARIO
           </button>
@@ -213,6 +274,50 @@ class App extends React.Component {
           }}>
             VALIDAR ANTES DE SALVAR
           </button>
+
+          <button className="btn btn-success" onClick={() => {
+            this.resetaFormulario();
+          }}>
+            RESETA FORMULARIO
+          </button>
+
+          <button className="btn btn-success" onClick={() => {
+            //this.setState(JSON.parse('{"formulario":[{"id":"01","tipo":"text","valor":"","placeholder":"","label":"Digite seu nome"},{"id":"02","tipo":"text","valor":"","placeholder":"","label":"Digite seu telefone"}]}'))
+            
+            axios.get(`http://localhost:8080/greeting`)
+                .then(res => {
+                const formulario = res.data;
+
+                console.log(formulario)
+
+                this.setState(formulario);
+            })
+          
+          }}>
+            CONSTRUIR
+          </button>
+
+          <button className="btn btn-success" onClick={() => {
+            //this.setState(JSON.parse('{"formulario":[{"id":"01","tipo":"text","valor":"","placeholder":"","label":"Digite seu nome"},{"id":"02","tipo":"text","valor":"","placeholder":"","label":"Digite seu telefone"}]}'))
+            
+            //const { formulario } = this.state;
+
+            const formulario = {
+                  formulario: this.state.formulario
+            }
+            
+            axios.post(`http://localhost:8080/submeter`, formulario)
+                .then(res => {
+                console.log("Foi karai")
+
+                
+            })
+          
+          }}>
+            ENVIAR PARA O SERVIDOR
+          </button>
+
+
 
         </div>
       )
@@ -286,7 +391,7 @@ const Select = ({componente, atualizaValorCampoSelect}) => {
         }>
           {componente.options.map((valor, index)=> {
             return(
-                  <option key={valor.id} value={valor.texto}>
+                  <option key={valor.id} value={valor.texto} id={valor.id}>
                     {valor.valor}
                   </option>);
           })}
