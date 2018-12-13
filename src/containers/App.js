@@ -50,6 +50,8 @@ class App extends React.Component {
                                {valor:"banana", id:"ch2"}, 
                                {valor:"abacaxi", id:"ch3"}]
        },
+       {tipo:"button", id:9, evento:"somar()", label: "Digite sua senha"},
+       {tipo:"evento", nome:""}
      ]
    }
 
@@ -204,6 +206,19 @@ class App extends React.Component {
 
   }
 
+  processaDadosNoServidor = (nome) => {
+    
+    const { formulario } = this.state;
+
+    formulario.map((valor)=>{
+
+       if (valor.tipo === "evento") {
+           valor["nome"] = nome;
+       }
+
+    });    
+  }
+
 
   renderizaComponente() {
     
@@ -232,6 +247,10 @@ class App extends React.Component {
           return(<Checkbox key={index}
             atualizaValorCheckbox={this.atualizaValorCheckbox}
             componente={valor} />);
+        } else if (valor.tipo === "button") {
+          return (<Button key={index} 
+            componente={valor}
+            processaDadosNoServidor={this.processaDadosNoServidor} />)
         }
         
       })
@@ -322,6 +341,15 @@ class App extends React.Component {
         </div>
       )
   }
+}
+
+const Button = ({componente, processaDadosNoServidor}) => {
+  return(
+    <div className="form-group col-sm-4">
+      <button type="button" className="btn btn-primary" onClick={() => {
+        processaDadosNoServidor(componente.evento)
+      }}>{componente.label}</button>
+    </div>)
 }
 
 const InputText = ({componente, atualizaValorCampoInput}) => {

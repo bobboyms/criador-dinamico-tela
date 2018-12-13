@@ -40919,6 +40919,15 @@ function (_React$Component) {
       console.log(JSON.stringify(novoCampo));
     };
 
+    _this.processaDadosNoServidor = function (nome) {
+      var formulario = _this.state.formulario;
+      formulario.map(function (valor) {
+        if (valor.tipo === "evento") {
+          valor["nome"] = nome;
+        }
+      });
+    };
+
     _this.state = {
       alertas: [],
       formulario: [{
@@ -41016,6 +41025,14 @@ function (_React$Component) {
           valor: "abacaxi",
           id: "ch3"
         }]
+      }, {
+        tipo: "button",
+        id: 9,
+        evento: "somar()",
+        label: "Digite sua senha"
+      }, {
+        tipo: "evento",
+        nome: ""
       }] //console.log(this.state);
 
     };
@@ -41154,6 +41171,12 @@ function (_React$Component) {
               atualizaValorCheckbox: _this3.atualizaValorCheckbox,
               componente: valor
             });
+          } else if (valor.tipo === "button") {
+            return _react.default.createElement(Button, {
+              key: index,
+              componente: valor,
+              processaDadosNoServidor: _this3.processaDadosNoServidor
+            });
           }
         });
         return arComponentes;
@@ -41224,9 +41247,23 @@ function (_React$Component) {
   return App;
 }(_react.default.Component);
 
-var InputText = function InputText(_ref) {
+var Button = function Button(_ref) {
   var componente = _ref.componente,
-      atualizaValorCampoInput = _ref.atualizaValorCampoInput;
+      processaDadosNoServidor = _ref.processaDadosNoServidor;
+  return _react.default.createElement("div", {
+    className: "form-group col-sm-4"
+  }, _react.default.createElement("button", {
+    type: "button",
+    className: "btn btn-primary",
+    onClick: function onClick() {
+      processaDadosNoServidor(componente.evento);
+    }
+  }, componente.label));
+};
+
+var InputText = function InputText(_ref2) {
+  var componente = _ref2.componente,
+      atualizaValorCampoInput = _ref2.atualizaValorCampoInput;
   return _react.default.createElement("div", {
     className: "form-group col-sm-4"
   }, _react.default.createElement("label", null, componente.label), _react.default.createElement("input", {
@@ -41241,9 +41278,9 @@ var InputText = function InputText(_ref) {
   }));
 };
 
-var Radio = function Radio(_ref2) {
-  var componente = _ref2.componente,
-      atualizaValorCampoRadio = _ref2.atualizaValorCampoRadio;
+var Radio = function Radio(_ref3) {
+  var componente = _ref3.componente,
+      atualizaValorCampoRadio = _ref3.atualizaValorCampoRadio;
   return _react.default.createElement("div", {
     className: "form-group col-sm-4"
   }, _react.default.createElement("label", null, componente.label), componente.options.map(function (valor, index) {
@@ -41266,9 +41303,9 @@ var Radio = function Radio(_ref2) {
   }));
 };
 
-var Checkbox = function Checkbox(_ref3) {
-  var componente = _ref3.componente,
-      atualizaValorCheckbox = _ref3.atualizaValorCheckbox;
+var Checkbox = function Checkbox(_ref4) {
+  var componente = _ref4.componente,
+      atualizaValorCheckbox = _ref4.atualizaValorCheckbox;
   return _react.default.createElement("div", {
     className: "form-group col-sm-4"
   }, _react.default.createElement("label", null, componente.label), componente.options.map(function (valor, index) {
@@ -41289,9 +41326,9 @@ var Checkbox = function Checkbox(_ref3) {
   }));
 };
 
-var Select = function Select(_ref4) {
-  var componente = _ref4.componente,
-      atualizaValorCampoSelect = _ref4.atualizaValorCampoSelect;
+var Select = function Select(_ref5) {
+  var componente = _ref5.componente,
+      atualizaValorCampoSelect = _ref5.atualizaValorCampoSelect;
   return _react.default.createElement("div", {
     className: "form-group col-sm-4"
   }, _react.default.createElement("label", {
@@ -41354,7 +41391,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64377" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55080" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
