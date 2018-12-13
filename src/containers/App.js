@@ -14,11 +14,11 @@ class App extends React.Component {
 
       alertas:[],
       formulario : [
-        {tipo:"text", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome",
+        {tipo:"text", type:"str", id:1, valor:"", placeholder:"Aqui voce vai digitar seu nome", label: "Digite seu nome",
         func: eval("(valor)=> {if (valor.trim().length == 0) {return false;}return true;}"),
         msgErro:"Campo nome nao pode ser vazio"},
  
-        {tipo:"text", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email",
+        {tipo:"text", type:"str", id:2, valor:"kalho doido", placeholder:"", label: "Digite seu email",
         func: (valor)=> {
  
            if (valor.trim().length == 0) {
@@ -28,15 +28,15 @@ class App extends React.Component {
          return true;
  
         }, msgErro:"Campo email nao pode ser vazio"},
-        {tipo:"password", id:3, valor:"", placeholder:"", label: "Digite sua senha"},
+        {tipo:"password",type:"str", id:3, valor:"", placeholder:"", label: "Digite sua senha"},
         {tipo:"select",id:4, label:"Selecione alguma coisa", index:"2", idDetail:"opt3", valor:"03", 
                        options:[
                                {valor:"01", id:"opt1"},
                                {valor:"02", id:"opt2"}, 
                                {valor:"03", id:"opt3"}]
         },
-        {tipo:"text", id:5, valor:"", placeholder:"", label: "Digite seu telefone"},
-        {tipo:"text", id:6, valor:"", placeholder:"", label: "Digite seu sobre nome"},
+        {tipo:"text",type:"str", id:5, valor:"", placeholder:"", label: "Digite seu telefone"},
+        {tipo:"text",type:"str", id:6, valor:"", placeholder:"", label: "Digite seu sobre nome"},
         
         {tipo:"radio", id:7, valor:"", index:"rd3", idDetail:"rd3", label: "Selecione RADIO", 
                        options:[
@@ -50,8 +50,8 @@ class App extends React.Component {
                                {valor:"banana", id:"ch2"}, 
                                {valor:"abacaxi", id:"ch3"}]
        },
-       {tipo:"button", id:9, evento:"somar()", label: "Digite sua senha"},
-       {tipo:"evento", nome:""}
+       {tipo:"button", id:9, evento:"eventoSoma", label: "Digite sua senha"},
+       
      ]
    }
 
@@ -303,7 +303,7 @@ class App extends React.Component {
           <button className="btn btn-success" onClick={() => {
             //this.setState(JSON.parse('{"formulario":[{"id":"01","tipo":"text","valor":"","placeholder":"","label":"Digite seu nome"},{"id":"02","tipo":"text","valor":"","placeholder":"","label":"Digite seu telefone"}]}'))
             
-            axios.get(`http://localhost:8080/greeting`)
+            axios.get(`http://127.0.0.1:5000/obter_formulario`)
                 .then(res => {
                 const formulario = res.data;
 
@@ -325,9 +325,13 @@ class App extends React.Component {
                   formulario: this.state.formulario
             }
             
-            axios.post(`http://localhost:8080/submeter`, formulario)
+            axios.post(`http://127.0.0.1:5000/enviar_formulario`, formulario)
                 .then(res => {
-                console.log("Foi karai")
+                  const formulario = res.data;
+
+                  console.log(formulario)
+  
+                  this.setState(formulario);
 
                 
             })
