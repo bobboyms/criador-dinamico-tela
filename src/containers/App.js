@@ -208,15 +208,25 @@ class App extends React.Component {
 
   processaDadosNoServidor = (nome) => {
     
-    const { formulario } = this.state;
 
-    formulario.map((valor)=>{
+    this.state.formulario.map((valor)=>{
 
        if (valor.tipo === "evento") {
            valor["nome"] = nome;
        }
 
-    });    
+    });
+    
+    const formulario = {
+      formulario: this.state.formulario
+    }
+
+    axios.post(`http://127.0.0.1:5000/enviar_formulario`, formulario)
+        .then(res => {
+          const formulario = res.data;
+          console.log(formulario)
+          this.setState(formulario);        
+    })
   }
 
 
@@ -319,22 +329,7 @@ class App extends React.Component {
           <button className="btn btn-success" onClick={() => {
             //this.setState(JSON.parse('{"formulario":[{"id":"01","tipo":"text","valor":"","placeholder":"","label":"Digite seu nome"},{"id":"02","tipo":"text","valor":"","placeholder":"","label":"Digite seu telefone"}]}'))
             
-            //const { formulario } = this.state;
-
-            const formulario = {
-                  formulario: this.state.formulario
-            }
-            
-            axios.post(`http://127.0.0.1:5000/enviar_formulario`, formulario)
-                .then(res => {
-                  const formulario = res.data;
-
-                  console.log(formulario)
-  
-                  this.setState(formulario);
-
-                
-            })
+            //const { formulario } = this.state;            
           
           }}>
             ENVIAR PARA O SERVIDOR
